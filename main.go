@@ -109,12 +109,78 @@ func convert() {
 
 }
 
+func average(unit string) {
+	fmt.Println("calculation average temp.")
+	var buffer []byte
+	var linebuf []byte // nil
+	buffer = make([]byte, 1)
+	bytesCount := 0
+	lineCount := 0
+
+	var sum float64 = 0
+	var n float64 = 0
+
+	src, err := os.Open("/home/ineant/project/minyr/kjevik-temp-celsius-20220318-20230318.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer src.Close()
+
+	for {
+		_, err := src.Read(buffer)
+		if err != nil && err != io.EOF {
+			log.Fatal(err)
+		}
+		bytesCount++
+		if buffer[0] == 0x0A {
+			//log.Println(string(linebuf))
+			lineCount++
+
+			//log.Println(lineCount)
+
+			if lineCount == 1 {
+				linebuf = nil
+				continue
+			}
+
+			if lineCount == 16756 {
+				break
+			}
+			elementArray := strings.Split(string(linebuf), ";")
+			if len(elementArray) > 3 {
+				celsius := elementArray[3]
+				f, err := strconv.ParseFloat(celsius, 64)
+				if err != nil {
+					log.Fatal(err)
+				}
+				sum += f
+				n += 1
+			}
+			linebuf = nil
+		} else {
+			linebuf = append(linebuf, buffer[0])
+		}
+		if err == io.EOF {
+			break
+		}
+	}
+	average := sum / n
+
+	if unit == "c" {
+		fmt.Println(average)
+	} else if unit == "f" {
+		fahr := conv.CelsiusToFarhrenheit(average)
+		fmt.Println(fahr)
+	}
+
+}
+
 func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
-		fmt.Println("enter an option: q or exit, convert")
+		fmt.Println("enter an option: q or exit, convert, average")
 		scanner.Scan()
 		input := scanner.Text()
 
@@ -134,8 +200,16 @@ func main() {
 			} else {
 				convert()
 			}
+		} else if input == "average" {
+			scanner.Scan()
+			input = scanner.Text()
+			if input == "f" {
+				average("f")
+			} else if input == "c" {
+				average("c")
+			}
 		} else {
-			fmt.Println("Please choose a valid option; q/exit, convert")
+			fmt.Println("Please choose a valid option; q/exit, convert, average")
 			continue
 		}
 
