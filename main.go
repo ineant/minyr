@@ -175,41 +175,45 @@ func average(unit string) {
 func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	input := scanner.Text()
+	if input == "minyr" {
+		for {
+			fmt.Println("velg et alternativ: q or exit, convert, average")
+			scanner.Scan()
+			input := scanner.Text()
 
-	for {
-		fmt.Println("velg et alternativ: q or exit, convert, average")
-		scanner.Scan()
-		input := scanner.Text()
-
-		if input == "q" || input == "exit" {
-			fmt.Println("konventerer alle målinger...")
-			os.Exit(0)
-		} else if input == "convert" {
-			if _, err := os.Stat("kjevik-temp-fahr-20220318-20230318.csv"); err == nil {
-				fmt.Printf("Filen eksisterer allerede, ønsker du å fortsette tast inn: y , eller avbryte med å taste inn: n.\n")
+			if input == "q" || input == "exit" {
+				fmt.Println("konventerer alle målinger...")
+				os.Exit(0)
+			} else if input == "convert" {
+				if _, err := os.Stat("kjevik-temp-fahr-20220318-20230318.csv"); err == nil {
+					fmt.Printf("Filen eksisterer allerede, ønsker du å fortsette tast inn: y , eller avbryte med å taste inn: n.\n")
+					scanner.Scan()
+					input = scanner.Text()
+					if input == "y" {
+						convert()
+					} else if input == "n" {
+						continue
+					}
+				} else {
+					convert()
+				}
+			} else if input == "average" {
+				fmt.Println("Ønsker gjennomsnitttemperatur for Celsius, tast inn: c")
+				fmt.Println("Ønsker gjennomsnitttemperatur for Farhrenheit, tast inn: f")
 				scanner.Scan()
 				input = scanner.Text()
-				if input == "y" {
-					convert()
-				} else if input == "n" {
-					continue
+				if input == "f" {
+					average("f")
+				} else if input == "c" {
+					average("c")
 				}
 			} else {
-				convert()
+				fmt.Println("Please choose a valid option; q/exit, convert, average")
+				continue
 			}
-		} else if input == "average" {
-			fmt.Println("Ønsker gjennomsnitttemperatur for Celsius, tast inn: c")
-			fmt.Println("Ønsker gjennomsnitttemperatur for Farhrenheit, tast inn: f")
-			scanner.Scan()
-			input = scanner.Text()
-			if input == "f" {
-				average("f")
-			} else if input == "c" {
-				average("c")
-			}
-		} else {
-			fmt.Println("Please choose a valid option; q/exit, convert, average")
-			continue
+
 		}
 
 	}
