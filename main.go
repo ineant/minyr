@@ -21,7 +21,7 @@ func convert() {
 	bytesCount := 0
 	lineCount := 0
 
-	src, err := os.Open("/home/ineant/project/minyr/kjevik-temp-celsius-20220318-20230318.csv")
+	src, err := os.Open("kjevik-temp-celsius-20220318-20230318.csv")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -110,7 +110,7 @@ func convert() {
 }
 
 func average(unit string) {
-	fmt.Println("calculation average temp.")
+	fmt.Println("kalkulere gjennomsnitt temperaturen...")
 	var buffer []byte
 	var linebuf []byte // nil
 	buffer = make([]byte, 1)
@@ -120,7 +120,7 @@ func average(unit string) {
 	var sum float64 = 0
 	var n float64 = 0
 
-	src, err := os.Open("/home/ineant/project/minyr/kjevik-temp-celsius-20220318-20230318.csv")
+	src, err := os.Open("kjevik-temp-celsius-20220318-20230318.csv")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -133,10 +133,7 @@ func average(unit string) {
 		}
 		bytesCount++
 		if buffer[0] == 0x0A {
-			//log.Println(string(linebuf))
 			lineCount++
-
-			//log.Println(lineCount)
 
 			if lineCount == 1 {
 				linebuf = nil
@@ -167,10 +164,10 @@ func average(unit string) {
 	average := sum / n
 
 	if unit == "c" {
-		fmt.Println(average)
+		fmt.Printf("%.2f\n", average)
 	} else if unit == "f" {
 		fahr := conv.CelsiusToFarhrenheit(average)
-		fmt.Println(fahr)
+		fmt.Printf("%.2f\n", fahr)
 	}
 
 }
@@ -180,16 +177,16 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
-		fmt.Println("enter an option: q or exit, convert, average")
+		fmt.Println("velg et alternativ: q or exit, convert, average")
 		scanner.Scan()
 		input := scanner.Text()
 
 		if input == "q" || input == "exit" {
-			fmt.Println("Converting all measurments..")
+			fmt.Println("konventerer alle målinger...")
 			os.Exit(0)
 		} else if input == "convert" {
 			if _, err := os.Stat("kjevik-temp-fahr-20220318-20230318.csv"); err == nil {
-				fmt.Printf("filen eksisterer allerede, ønsker å fortsette trykk y eller avbryte n.\n")
+				fmt.Printf("Filen eksisterer allerede, ønsker du å fortsette tast inn: y , eller avbryte med å taste inn: n.\n")
 				scanner.Scan()
 				input = scanner.Text()
 				if input == "y" {
@@ -201,6 +198,8 @@ func main() {
 				convert()
 			}
 		} else if input == "average" {
+			fmt.Println("Ønsker gjennomsnitttemperatur for Celsius, tast inn: c")
+			fmt.Println("Ønsker gjennomsnitttemperatur for Farhrenheit, tast inn: f")
 			scanner.Scan()
 			input = scanner.Text()
 			if input == "f" {
