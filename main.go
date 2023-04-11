@@ -175,6 +175,7 @@ func average(unit string) {
 func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Println("to start the program, type: minyr")
 	scanner.Scan()
 	input := scanner.Text()
 	if input == "minyr" {
