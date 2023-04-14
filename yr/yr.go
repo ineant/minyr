@@ -1,6 +1,7 @@
 package yr
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"io"
@@ -39,17 +40,18 @@ func CelsiusToFahrenheitLine(line string) (string, error) {
 	return strings.Join(elementsInLine, ";"), nil
 }
 
-func AverageCelsius(average string) (string, error) {
+func AverageCelsius(unit string) (string, error) {
 	var buffer []byte
 	var linebuf []byte
 	buffer = make([]byte, 1)
 	bytesCount := 0
 	lineCount := 0
+	result := ""
 
 	var sum float64 = 0
 	var n float64 = 0
 
-	src, err := os.Open("home/github.com/ineant/minyr/kjevik-temp-celsius-20220318-20230318.csv")
+	src, err := os.Open("../kjevik-temp-celsius-20220318-20230318.csv")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -88,6 +90,32 @@ func AverageCelsius(average string) (string, error) {
 		if err == io.EOF {
 			break
 		}
+		average := sum / n
+
+		if unit == "c" {
+			result = fmt.Sprintf("%.2f", average)
+		} else if unit == "f" {
+			fahr := conv.CelsiusToFarhrenheit(average)
+			result = fmt.Sprintf("%.2f", fahr)
+		}
 	}
-	return "", errors.New("linje har ikke forventet format")
+	return result, errors.New("linje har ikke forventet format")
+}
+
+func CountLinesInFile(filename string) (string, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	lineCount := 0
+	for scanner.Scan() {
+		lineCount++
+	}
+
+	if err := scanner.Err(); err != nil {
+		return "", err
+	}
+	return strconv.Itoa(lineCount), nil
 }

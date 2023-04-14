@@ -112,7 +112,7 @@ func convert() {
 func average(unit string) {
 	fmt.Println("kalkulere gjennomsnitt temperaturen...")
 	var buffer []byte
-	var linebuf []byte // nil
+	var linebuf []byte
 	buffer = make([]byte, 1)
 	bytesCount := 0
 	lineCount := 0
@@ -185,7 +185,7 @@ func main() {
 			input := scanner.Text()
 
 			if input == "q" || input == "exit" {
-				fmt.Println("konventerer alle målinger...")
+				fmt.Println("Hade! Håper vi aldri ses igjen :)")
 				os.Exit(0)
 			} else if input == "convert" {
 				if _, err := os.Stat("kjevik-temp-fahr-20220318-20230318.csv"); err == nil {
